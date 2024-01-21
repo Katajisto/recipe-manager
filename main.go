@@ -1,6 +1,7 @@
 package main
 
 import (
+	"html/template"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -10,17 +11,25 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
+var views = template.Must(template.ParseGlob("templates/*.tmpl"))
+
 func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Logger)
+
+	createDb()
+	defer closeDb()
 
 	workDir, _ := os.Getwd()
 	fileDir := http.Dir(filepath.Join(workDir, "static"))
 	FileServer(r, "/static", fileDir)
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("hello"))
+		err := views.ExecuteTemplate(w, "index.tmpl", nil)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 	})
 
 	http.ListenAndServe(":3000", r)
