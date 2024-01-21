@@ -1,0 +1,15 @@
+{{ define "recipesList" }}
+<div class="flex justify-between mb-3 items-center">
+	<h2>Your recipes</h2>
+	<button hx-swap="innerHTML" hx-target="#leftpanel"  hx-get="/recipeAdd" class="bg-green-300 p-1 text-md rounded hover:bg-green-200">Add +</button>
+</div>
+<div>
+	{{ range $value := .}}
+	<div class="bg-white text-black shadow rounded p-2 my-1 hover:bg-gray-100 cursor-pointer">
+		{{ $value.Name }}
+	</div>
+	{{ end }}
+</div>
+{{ end }}
+
+{{ template "recipesList" }}

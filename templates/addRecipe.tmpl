@@ -1,0 +1,8 @@
+<div class="w-full flex-col flex">
+	<form hx-post="/recipe" class="w-full flex flex-col rounded">
+		<input type="text" name="name" placeholder="Name" class="rounded shadow my-1 p-1" w-full></input>
+		<textarea name="desc" class="my-1 p-1  rounded shadow" placeholder="Description"></textarea>
+		<input type="submit" class="text-center w-full p-1 my-1 bg-green-600 text-white cursor-pointer hover:bg-green-800 rounded shadow" value="Add"></input>
+	</form>
+	<button hx-get="/recipes" hx-swap="innerHTML" hx-target="#leftpanel" class="text-center w-full p-1 my-1 bg-gray-300 cursor-pointer hover:bg-gray-200">Cancel</button>
+</div>

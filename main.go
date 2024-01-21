@@ -2,6 +2,7 @@ package main
 
 import (
 	"html/template"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -26,9 +27,32 @@ func main() {
 	FileServer(r, "/static", fileDir)
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		err := views.ExecuteTemplate(w, "index.tmpl", nil)
+		err := views.ExecuteTemplate(w, "index.tmpl", GetRecipes())
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	})
+
+	r.Get("/recipeAdd", func(w http.ResponseWriter, r *http.Request) {
+		err := views.ExecuteTemplate(w, "addRecipe.tmpl", nil)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	})
+
+	r.Get("/recipes", func(w http.ResponseWriter, r *http.Request) {
+		err := views.ExecuteTemplate(w, "recipesList.tmpl", GetRecipes())
+		if err != nil {
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	})
+
+	r.Post("/recipe", func(w http.ResponseWriter, r *http.Request) {
+		nr := Recipe{Name: r.FormValue("name"), Description: r.FormValue("desc")}
+		err := nr.Add()
+		if err != nil {
+			log.Println("error: ", err)
 		}
 	})
 

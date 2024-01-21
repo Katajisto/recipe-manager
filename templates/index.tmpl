@@ -1,15 +1,7 @@
 {{ template "prefix" }}
-<div class="flex p-5">
-	<div class="w-1/3 p-2 text-green-600 rounded bg-green-100">
-		<div class="flex justify-between mb-3 items-center">
-			<h2>Your recipes</h2>
-			<button class="bg-green-300 p-1 text-md rounded hover:bg-green-200">Add +</button>
-		</div>
-		<div>
-			<div class="bg-white text-black shadow rounded p-2 my-1 hover:bg-gray-100 cursor-pointer">
-				Resepti 1
-			</div>
-		</div>
+<div id="app" class="flex p-5">
+	<div id="leftpanel" class="w-1/3 p-2 text-green-600 rounded bg-green-100">
+		{{ template "recipesList"}}
 	</div>
 	<div class="w-2/3 ml-2 p-2 text-green-600 rounded bg-green-100">
 		<div class="flex justify-between mb-3 items-center">
