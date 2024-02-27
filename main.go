@@ -54,6 +54,10 @@ func main() {
 		if err != nil {
 			log.Println("error: ", err)
 		}
+		err = views.ExecuteTemplate(w, "recipesList.tmpl", GetRecipes())
+		if err != nil {
+			log.Println("error: ", err)
+		}
 	})
 
 	http.ListenAndServe(":3000", r)
