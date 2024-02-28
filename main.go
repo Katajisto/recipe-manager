@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
@@ -13,6 +14,11 @@ import (
 )
 
 var views = template.Must(template.ParseGlob("templates/*.tmpl"))
+
+type RecipeListInput struct {
+	Recipes []Recipe
+	Oob     bool
+}
 
 func main() {
 	r := chi.NewRouter()
@@ -27,7 +33,7 @@ func main() {
 	FileServer(r, "/static", fileDir)
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		err := views.ExecuteTemplate(w, "index.tmpl", GetRecipes())
+		err := views.ExecuteTemplate(w, "index.tmpl", RecipeListInput{Recipes: GetRecipes(), Oob: false})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
@@ -41,7 +47,48 @@ func main() {
 	})
 
 	r.Get("/recipes", func(w http.ResponseWriter, r *http.Request) {
-		err := views.ExecuteTemplate(w, "recipesList.tmpl", GetRecipes())
+		err := views.ExecuteTemplate(w, "recipesList.tmpl", RecipeListInput{Recipes: GetRecipes(), Oob: false})
+		if err != nil {
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	})
+
+	r.Get("/recipes/{id}", func(w http.ResponseWriter, r *http.Request) {
+		id := chi.URLParam(r, "id")
+		idInt, err := strconv.Atoi(id)
+
+		recipe, err := GetRecipeById(idInt)
+
+		if err != nil {
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusNotFound)
+		}
+
+		err = views.ExecuteTemplate(w, "recipe.tmpl", recipe)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	})
+
+	r.Delete("/recipes/{id}", func(w http.ResponseWriter, r *http.Request) {
+		id := chi.URLParam(r, "id")
+		idInt, err := strconv.Atoi(id)
+
+		err = DeleteRecipeById(idInt)
+
+		if err != nil {
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusNotFound)
+		}
+
+		err = views.ExecuteTemplate(w, "centralPanel.tmpl", nil)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		err = views.ExecuteTemplate(w, "recipesList.tmpl", RecipeListInput{Recipes: GetRecipes(), Oob: true}) // Regen the recipeList for the OOB swap
 		if err != nil {
 			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -54,7 +101,7 @@ func main() {
 		if err != nil {
 			log.Println("error: ", err)
 		}
-		err = views.ExecuteTemplate(w, "recipesList.tmpl", GetRecipes())
+		err = views.ExecuteTemplate(w, "recipesList.tmpl", RecipeListInput{Recipes: GetRecipes(), Oob: false})
 		if err != nil {
 			log.Println("error: ", err)
 		}
