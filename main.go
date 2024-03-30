@@ -107,6 +107,8 @@ func main() {
 		}
 	})
 
+	addGenerateRoute(r)
+
 	http.ListenAndServe(":3000", r)
 }
 
