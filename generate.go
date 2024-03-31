@@ -11,13 +11,17 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+var days []string = []string{"Maanantai", "Tiistai", "Keskiviikko", "Torstai", "Perjantai", "Lauantai", "Sunnuntai"}
+var mealNames []string = []string{"Lounas", "Illallinen"}
+
 type Meal struct {
-	Id       int
-	Locked   bool
-	Recipe   *Recipe
-	Clear    bool
-	FlipUrl  string
-	ClearUrl string
+	Id        int
+	Locked    bool
+	Recipe    *Recipe
+	MealLabel string
+	Clear     bool
+	FlipUrl   string
+	ClearUrl  string
 }
 
 type Generation struct {
@@ -125,9 +129,23 @@ func (g *Generation) genFlipUrls() {
 	}
 }
 
+func (g *Generation) genMealLabels(start int) {
+	for i := 0; i < len(g.Meals); i++ {
+		g.Meals[i].MealLabel = days[((i+start)/2)%7] + " - " + mealNames[(i+start)%2]
+	}
+}
+
 func addGenerateRoute(r *chi.Mux) {
 	r.Get("/gen/{key}", func(w http.ResponseWriter, r *http.Request) {
 		key := chi.URLParam(r, "key")
+
+		startMeal := 0
+		startingMealQString := r.URL.Query().Get("startMeal") // Query parameter from 0 to 13 representing the meal the list should start on.
+		startingMealQ, err := strconv.Atoi(startingMealQString)
+		if err == nil && startingMealQ >= 0 && startingMealQ <= 13 {
+			startMeal = startingMealQ
+		}
+
 		if key == "none" { // If key is empty, gen a 14 recipe key and redir to that
 			gen := Generation{}
 			gen.generate(14)
@@ -141,6 +159,7 @@ func addGenerateRoute(r *chi.Mux) {
 		}
 
 		gen.genFlipUrls()
+		gen.genMealLabels(startMeal)
 		gen.CurKey = key
 
 		log.Println("Has key!")

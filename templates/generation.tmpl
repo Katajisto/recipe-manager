@@ -12,7 +12,7 @@
 		<tbody>
 		{{ range $i, $value := .Meals }}
 		<tr class="p-5">
-			<td class="pb-2 text-center">{{ $i }}</td>
+			<td class="pb-2 text-center">{{ $value.MealLabel }}</td>
 			<td class="pb-2">{{ $value.Recipe.Name }}</td>
 			<td class="pb-2 text-center">
 				{{ if not $value.Clear }}
