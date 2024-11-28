@@ -11,7 +11,7 @@
 		</thead>
 		<tbody>
 		{{ range $i, $value := .Meals }}
-		<tr class="p-5">
+		<tr class="p-5 {{ if $value.Locked }}bg-red-100{{ end }}">
 			<td class="pb-2 text-center">{{ $value.MealLabel }}</td>
 			<td class="pb-2">{{ $value.Recipe.Name }}</td>
 			<td class="pb-2 text-center">
