@@ -15,6 +15,11 @@ type Recipe struct {
 	// Skip ingredient list things for now, since I feel like that is way too much effort for this MVP.
 }
 
+type Config struct {
+	Id           int
+	PasswordHash string
+}
+
 func (r Recipe) Add() error {
 	_, err := Db.Exec("INSERT INTO recipes (name, desc) values($1, $2);", r.Name, r.Description)
 	return err
@@ -51,6 +56,22 @@ func GetRecipeById(id int) (Recipe, error) {
 	return Recipe{iddest, name, desc}, nil
 }
 
+// Returns nil if there is no config
+func GetConfig() *Config {
+	row := Db.QueryRow("SELECT * FROM config")
+	var conf Config
+	err := row.Scan(&conf.Id, &conf.PasswordHash)
+	if err != nil {
+		return nil
+	}
+	return &conf
+}
+
+func CreateConfig(passwd string) error {
+	_, err := Db.Exec("INSERT INTO config (passwordhash) values($1)", passwd)
+	return err
+}
+
 func DeleteRecipeById(id int) error {
 	res, err := Db.Exec("DELETE FROM recipes WHERE id = $1", id)
 	if err != nil {
@@ -74,6 +95,7 @@ var Db *sql.DB
 
 func createTable() {
 	Db.Exec("CREATE TABLE IF NOT EXISTS recipes(id INTEGER PRIMARY KEY, name TEXT NOT NULL, desc TEXT);")
+	Db.Exec("CREATE TABLE IF NOT EXISTS config(id INTEGER PRIMARY KEY, passwordHash TEXT NOT NULL);")
 }
 
 func createDb() {

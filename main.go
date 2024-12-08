@@ -8,6 +8,9 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
+
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -22,8 +25,12 @@ type RecipeListInput struct {
 
 func main() {
 	r := chi.NewRouter()
+	r.Use(middleware.RealIP)
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.Timeout(time.Second * 10))
+	r.Use(ConfigMiddleware)
 
 	createDb()
 	defer closeDb()
@@ -37,6 +44,22 @@ func main() {
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
+	})
+
+	r.Post("/doinit", func(w http.ResponseWriter, r *http.Request) {
+		passwd := r.FormValue("password")
+		hash, err := bcrypt.GenerateFromPassword([]byte(passwd), bcrypt.DefaultCost)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+
+		err = CreateConfig(string(hash))
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	})
 
 	r.Get("/recipeAdd", func(w http.ResponseWriter, r *http.Request) {

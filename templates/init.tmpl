@@ -1,0 +1,11 @@
+{{ template "baseprefix" }}
+<div class="flex flex-col w-full h-screen bg-gray-200 justify-center items-center">
+	<h1 class="text-2xl">Init Omnom!</h1>
+	<p class="w-3/4 mb-6 mt-3">Hello and welcome to Omnom! Omnom is a recipe management software designed to make it easy to generate meal lists to order ingredients from grocery stores. It works by allowing random generation of meal lists with an ability to lock in some generated meals and regenerate others.<p>
+	<p class="w-3/4 mb-6">Omnom works with a chosen single password for your family! Please enter a password you would like to use for the instance. After you enter this password, you will be prompted to log in and you can begin using Omnom!<p>
+	<form method="POST" action="/doinit"  class="flex flex-col w-3/4">
+		<input name="password" class="p-2 mb-5" placeholder="Set password" type="password"/>
+		<input value="Set password and continue!" class="bg-gray-600 hover:bg-gray-700 p-2 w-full text-white" type="submit">
+	</form>
+</div>
+{{ template "suffix" }}
