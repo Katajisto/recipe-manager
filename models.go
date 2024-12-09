@@ -72,6 +72,21 @@ func CreateConfig(passwd string) error {
 	return err
 }
 
+func CreateToken(token string) error {
+	_, err := Db.Exec("INSERT INTO token (token) values($1)", token)
+	return err
+}
+
+func CheckToken(token string) bool {
+	row := Db.QueryRow("SELECT token FROM token WHERE token = $1", token)
+	var tokenRes string
+	err := row.Scan(&tokenRes)
+	if err != nil || token != tokenRes {
+		return false
+	}
+	return true
+}
+
 func DeleteRecipeById(id int) error {
 	res, err := Db.Exec("DELETE FROM recipes WHERE id = $1", id)
 	if err != nil {
@@ -96,6 +111,7 @@ var Db *sql.DB
 func createTable() {
 	Db.Exec("CREATE TABLE IF NOT EXISTS recipes(id INTEGER PRIMARY KEY, name TEXT NOT NULL, desc TEXT);")
 	Db.Exec("CREATE TABLE IF NOT EXISTS config(id INTEGER PRIMARY KEY, passwordHash TEXT NOT NULL);")
+	Db.Exec("CREATE TABLE IF NOT EXISTS token(id INTEGER PRIMARY KEY, token TEXT NOT NULL);")
 }
 
 func createDb() {

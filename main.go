@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"html/template"
 	"log"
 	"net/http"
@@ -30,7 +32,10 @@ func main() {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(time.Second * 10))
-	r.Use(ConfigMiddleware)
+
+	authRouter := chi.NewRouter()
+	authRouter.Use(ConfigMiddleware)
+	authRouter.Use(AuthMiddleware)
 
 	createDb()
 	defer closeDb()
@@ -39,7 +44,7 @@ func main() {
 	fileDir := http.Dir(filepath.Join(workDir, "static"))
 	FileServer(r, "/static", fileDir)
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+	authRouter.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		err := views.ExecuteTemplate(w, "index.tmpl", RecipeListInput{Recipes: GetRecipes(), Oob: false})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -62,14 +67,48 @@ func main() {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	})
 
-	r.Get("/recipeAdd", func(w http.ResponseWriter, r *http.Request) {
+	r.Post("/dologin", func(w http.ResponseWriter, r *http.Request) {
+		passwd := r.FormValue("password")
+		config := GetConfig()
+		if bcrypt.CompareHashAndPassword([]byte(config.PasswordHash), []byte(passwd)) == nil {
+			t := make([]byte, 50)
+			rand.Read(t)
+
+			tokenString := hex.EncodeToString(t)
+
+			err := CreateToken(tokenString)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			cookie := http.Cookie{
+				Name:     "auth",
+				Value:    tokenString,
+				Path:     "/",
+				MaxAge:   0,
+				HttpOnly: true,
+				Secure:   true,
+				SameSite: http.SameSiteStrictMode,
+			}
+
+			http.SetCookie(w, &cookie)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		} else {
+			views.ExecuteTemplate(w, "login.tmpl", "Login failed!")
+			return
+		}
+	})
+
+	authRouter.Get("/recipeAdd", func(w http.ResponseWriter, r *http.Request) {
 		err := views.ExecuteTemplate(w, "addRecipe.tmpl", nil)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	})
 
-	r.Get("/recipes", func(w http.ResponseWriter, r *http.Request) {
+	authRouter.Get("/recipes", func(w http.ResponseWriter, r *http.Request) {
 		err := views.ExecuteTemplate(w, "recipesList.tmpl", RecipeListInput{Recipes: GetRecipes(), Oob: false})
 		if err != nil {
 			log.Println(err)
@@ -77,7 +116,7 @@ func main() {
 		}
 	})
 
-	r.Get("/recipes/{id}", func(w http.ResponseWriter, r *http.Request) {
+	authRouter.Get("/recipes/{id}", func(w http.ResponseWriter, r *http.Request) {
 		id := chi.URLParam(r, "id")
 		idInt, err := strconv.Atoi(id)
 
@@ -95,7 +134,7 @@ func main() {
 		}
 	})
 
-	r.Delete("/recipes/{id}", func(w http.ResponseWriter, r *http.Request) {
+	authRouter.Delete("/recipes/{id}", func(w http.ResponseWriter, r *http.Request) {
 		id := chi.URLParam(r, "id")
 		idInt, err := strconv.Atoi(id)
 
@@ -118,7 +157,7 @@ func main() {
 		}
 	})
 
-	r.Post("/recipe", func(w http.ResponseWriter, r *http.Request) {
+	authRouter.Post("/recipe", func(w http.ResponseWriter, r *http.Request) {
 		nr := Recipe{Name: r.FormValue("name"), Description: r.FormValue("desc")}
 		err := nr.Add()
 		if err != nil {
@@ -130,7 +169,9 @@ func main() {
 		}
 	})
 
-	addGenerateRoute(r)
+	addGenerateRoute(authRouter)
+
+	r.Mount("/", authRouter)
 
 	http.ListenAndServe(":3000", r)
 }

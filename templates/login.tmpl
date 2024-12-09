@@ -1,0 +1,10 @@
+{{ template "baseprefix" }}
+<div class="flex flex-col w-full h-screen bg-gray-200 justify-center items-center">
+	<h1 class="text-2xl pb-3">Log in to Omnom!</h1>
+	<h2 class="text-xl text-red-700 pb-3">{{ . }}</h2>
+	<form method="POST" action="/dologin"  class="pt-5 flex flex-col w-3/4">
+		<input name="password" class="p-2 mb-5" placeholder="Password" type="password"/>
+		<input value="Login!" class="bg-gray-600 hover:bg-gray-700 p-2 w-full text-white" type="submit">
+	</form>
+</div>
+{{ template "suffix" }}
