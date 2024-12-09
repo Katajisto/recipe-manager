@@ -173,7 +173,12 @@ func main() {
 
 	r.Mount("/", authRouter)
 
-	http.ListenAndServe(":3000", r)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+
+	http.ListenAndServe(":"+port, r)
 }
 
 // FileServer conveniently sets up a http.FileServer handler to serve
