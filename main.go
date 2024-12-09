@@ -178,6 +178,8 @@ func main() {
 		port = "3000"
 	}
 
+	log.Println("Starting server at port: ", port)
+
 	http.ListenAndServe(":"+port, r)
 }
 
