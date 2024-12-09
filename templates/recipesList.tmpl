@@ -2,7 +2,7 @@
 <div {{if .Oob }}hx-swap-oob="true"{{ end }} id="recipelist">
 	<div class="flex justify-between mb-3 items-center">
 		<h2>Your recipes</h2>
-		<button hx-swap="innerHTML" hx-target="#leftpanel"  hx-get="/recipeAdd" class="bg-green-300 p-1 text-md rounded hover:bg-green-200">Add +</button>
+		<button hx-swap="innerHTML" hx-target="#leftpanel"  hx-get="/recipeAdd" class="bg-gray-300 p-1 text-md rounded hover:bg-gray-200">Add +</button>
 	</div>
 	<div>
 		{{ range $value := .Recipes}}
