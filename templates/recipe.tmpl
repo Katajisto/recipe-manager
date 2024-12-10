@@ -1,5 +1,5 @@
 <div class="flex justify-between m-2">
-	<h1 class="text-center text-2xl font-bold">{{ .Name }}</h1>
-	<button class="rounded bg-green-600 shadow text-white px-2" hx-delete="/recipes/{{ .Id }}" hx-swap="innerHTML" hx-target="#centralpanel">Delete</button>
+	<h1 class="text-center text-4xl usefont">{{ .Name }}</h1>
+	<button class="text-black px-2 text-3xl hover:text-gray-600 hover:cursor-pointer" hx-confirm="Are you sure you want to delete the recipe: {{ .Name }}?"hx-delete="/recipes/{{ .Id }}" hx-swap="innerHTML" hx-target="#centralpanel">🞭</button>
 </div>
-<pre>{{ .Description }}</pre>
+<pre class="usefontlight text-xl m-2">{{ .Description }}</pre>

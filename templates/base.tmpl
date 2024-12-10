@@ -5,15 +5,33 @@
 		<title>Omnom</title>
 		<link rel="stylesheet" href="/static/build.css" />
 		<script src="/static/vendor/htmx.js"></script>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Shippori+Mincho&display=swap" rel="stylesheet">
+		<style>
+			.usefont {
+			  font-family: "Newsreader", serif;
+			  font-optical-sizing: auto;
+			  font-weight: 500;
+			  font-style: normal;
+			}
+			.usefontlight {
+			  font-family: "Newsreader", serif;
+			  font-optical-sizing: auto;
+			  font-weight: 350;
+			  font-style: normal;
+			}
+		</style>
 	</head>
-	<body>
-		<nav class="flex bg-gray-600 text-white items-center justify-between px-5 py-2 z-50">
-			<a href="/" class="text-xl">Omnom</a>
+	<body class="h-screen flex-col flex">
+	
+		<div class="block flex bg-gray-50 shadow-md text-white items-center justify-between px-5 py-2 z-50">
+			<a href="/" class="text-3xl font-bold text-black usefont">🥞 Omnom </a>
 			<div class="flex">
-				<a href="/gen/none" class="m-0 mx-2 text-md rounded bg-gray-900 p-1 z-50">Generate</a>
+				<a href="/gen/none" class="usefont m-0 mx-2 text-2xl bg-gray-900 px-2 pt-1 z-50">Generate</a>
 				<!--<button class="m-0 mx-2 text-md rounded bg-green-900 p-1">Log out</button>-->
 			</div>
-		</nav>
+		</div>
 		<!-- Include main -->
 {{end}}
 {{define "baseprefix"}}
@@ -23,6 +41,19 @@
 		<title>Omnom</title>
 		<link rel="stylesheet" href="/static/build.css" />
 		<script src="/static/vendor/htmx.js"></script>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Shippori+Mincho&display=swap" rel="stylesheet">
+		<style>
+			.usefont {
+			  font-family: "Newsreader", serif;
+			  font-optical-sizing: auto;
+			  font-weight: 500;
+			  font-style: normal;
+			}
+
+		</style>
+		
 	</head>
 	<!-- Include main -->
 {{end}}

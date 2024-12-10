@@ -1,13 +1,13 @@
 {{ define "recipesList" }}
 <div {{if .Oob }}hx-swap-oob="true"{{ end }} id="recipelist">
-	<div class="flex justify-between mb-3 items-center">
-		<h2>Your recipes</h2>
-		<button hx-swap="innerHTML" hx-target="#leftpanel"  hx-get="/recipeAdd" class="bg-gray-300 p-1 text-md rounded hover:bg-gray-200">Add +</button>
+	<div class="flex justify-between mb-1 items-center">
+		<h2 class="text-2xl usefont">Your recipes</h2>
+		<button hx-swap="innerHTML" hx-target="#leftpanel"  hx-get="/recipeAdd" class="usefont text-gray-900 hover:text-gray-500 font-bold p-1 text-3xl ">+</button>
 	</div>
 	<div>
 		{{ range $value := .Recipes}}
-		<div hx-trigger="click" hx-get="/recipes/{{ $value.Id }}" hx-target="#centralpanel" class="bg-white text-black shadow rounded p-2 my-1 hover:bg-gray-100 cursor-pointer">
-			{{ $value.Name }}
+		<div hx-trigger="click" hx-get="/recipes/{{ $value.Id }}" hx-target="#centralpanel" class="flex align-center text-2xl usefont text-black my-1 hover:text-gray-600 cursor-pointer">
+			<span class="text-sm pt-1 pr-2">◆</span>  {{ $value.Name }}
 		</div>
 		{{ end }}
 	</div>
